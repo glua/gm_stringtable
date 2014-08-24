@@ -164,7 +164,7 @@ GMOD_MODULE_OPEN() {
 		}
 
 		if (!networktablecontainer) {
-			LUA->ThrowError("(GM_STRINGTABLE) Could not find INetworkStringTableContainer\n");
+			LUA->ThrowError("(GM_STRINGTABLE) Could not find INetworkStringTableContainer!\n");
 			return 0;
 		}
 
