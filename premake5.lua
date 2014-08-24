@@ -13,8 +13,7 @@ solution "gm_stringtable"
 		"include",
 		path.join(SOURCE_SDK, "common"),
 		path.join(SOURCE_SDK, "public"),
-		path.join(SOURCE_SDK, "public/tier0"),
-		path.join(SOURCE_SDK, "public/tier1")
+		path.join(SOURCE_SDK, "public/tier0")
 	}
 
 	libdirs {
@@ -22,8 +21,7 @@ solution "gm_stringtable"
 	}
 
 	links {
-		"tier0",
-		"tier1"
+		"tier0"
 	}
 	
 
@@ -37,7 +35,7 @@ solution "gm_stringtable"
 
 	configuration "Release"
 		optimize "On"
-		
+
 
 	project "gm_stringtable"
 		kind "SharedLib"
