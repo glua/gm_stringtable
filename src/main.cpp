@@ -13,47 +13,6 @@ const int STRINGTABLE_META = 124571;
 
 INetworkStringTableContainer *networktablecontainer;
 
-int GetLuaFiles(lua_State *state) {
-	INetworkStringTable *client_lua_files = networktablecontainer->FindTable("client_lua_files");
-
-	LUA->CreateTable();
-
-	if (!client_lua_files) {
-		return 1;
-	}
-
-	for (int i = 1; i < client_lua_files->GetNumStrings(); i++){ // Skip first entry
-		LUA->PushNumber(i);
-		LUA->PushString(client_lua_files->GetString(i));
-		LUA->SetTable(-3);
-	}
-
-	return 1;
-}
-
-int GetLuaFileCRC(lua_State *state) {
-	INetworkStringTable *client_lua_files = networktablecontainer->FindTable("client_lua_files");
-	
-	if (!client_lua_files) {
-		return 0;
-	}
-
-	const char *file_name = LUA->CheckString(1);
-	int file_index = client_lua_files->FindStringIndex(file_name);
-
-	if (file_index == INVALID_STRING_INDEX) {
-		return 0;
-	}
-
-	int file_len;
-
-	unsigned int file_crc = *(unsigned int*)client_lua_files->GetStringUserData(file_index, &file_len);
-
-	LUA->PushNumber(file_crc);
-
-	return 1;
-}
-
 //
 // stringtable library functions
 //
