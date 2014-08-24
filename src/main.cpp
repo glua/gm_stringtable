@@ -32,7 +32,7 @@ int stringtable_Get(lua_State *state) {
 	if (!table)
 		return 0;
 
-	INetworkStringTable **ud = (INetworkStringTable **)LUA->NewUserdata(sizeof(INetworkStringTable*)); // Y is there no proper userdata binding gAARRY?
+	INetworkStringTable **ud = (INetworkStringTable **)LUA->NewUserdata(sizeof(INetworkStringTable*)); // Why is there no proper userdata binding Garry	?
 		*ud = table;
 
 		LUA->CreateMetaTableType("StringTable", Lua::Type::USERDATA);
