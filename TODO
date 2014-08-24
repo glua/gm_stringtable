@@ -1,0 +1,8 @@
+Allocate userdata to some struct (Maybe GarrysMod::Lua::UserData, but I ain't a fan of it. Although Garry gives us no choice but to do that and hope everyone else does the same becauEW OSE THE FUCKING luaL_checkudata LACK)
+Userdata typechecks so that we don't crash when a StringTable object isn't passed to our metamethods
+
+StringTable::FindString -- Search for string equal to contents, rather than having to iterate within Lua
+
+Perhaps bring out some table modification functions, table creation functions and table callback creation
+
+It'll probably explode if ran in both the client state and menu state.. although maybe not.
