@@ -9,9 +9,10 @@
 
 using namespace GarrysMod;
 
-const int STRINGTABLE_META = 124571;
-
 INetworkStringTableContainer *networktablecontainer;
+
+typedef void *(__cdecl *luaL_checkudataFn)(lua_State *L, int narg, const char *tname);
+luaL_checkudataFn luaL_checkudata;
 
 //
 // stringtable library functions
@@ -34,7 +35,7 @@ int stringtable_Get(lua_State *state) {
 	INetworkStringTable **ud = (INetworkStringTable **)LUA->NewUserdata(sizeof(INetworkStringTable*)); // Y is there no proper userdata binding gAARRY?
 		*ud = table;
 
-		LUA->CreateMetaTableType("StringTable", STRINGTABLE_META);
+		LUA->CreateMetaTableType("StringTable", Lua::Type::USERDATA);
 	LUA->SetMetaTable(-2);
 
 	return 1;
@@ -50,7 +51,7 @@ int stringtable_Count(lua_State *state) {
 // StringTable Meta-Methods
 //
 int StringTable_tostring(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -66,7 +67,7 @@ int StringTable_tostring(lua_State *state) {
 }
 
 int StringTable_GetName(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -77,7 +78,7 @@ int StringTable_GetName(lua_State *state) {
 }
 
 int StringTable_GetString(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -90,7 +91,7 @@ int StringTable_GetString(lua_State *state) {
 }
 
 int StringTable_GetUserData(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -109,7 +110,7 @@ int StringTable_GetUserData(lua_State *state) {
 }
 
 int StringTable_GetUserDataInt(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -128,7 +129,7 @@ int StringTable_GetUserDataInt(lua_State *state) {
 }
 
 int StringTable_Count(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 
 	if (!table)
 		return 0;
@@ -139,7 +140,7 @@ int StringTable_Count(lua_State *state) {
 }
 
 int StringTable_Size(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)LUA->GetUserdata(1);
+	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
 	
 	if (!table)
 		return 0;
@@ -176,7 +177,7 @@ GMOD_MODULE_OPEN() {
 			LUA->SetField(-2, "Count");
 		LUA->SetField(-2, "stringtable");
 
-		LUA->CreateMetaTableType("StringTable", STRINGTABLE_META);
+		LUA->CreateMetaTableType("StringTable", Lua::Type::USERDATA);
 			LUA->Push(-1);
 			LUA->SetField(-2, "__index");
 
@@ -206,6 +207,10 @@ GMOD_MODULE_OPEN() {
 		LUA->Pop();
 
 	LUA->Pop();
+
+	HMODULE hModule = GetModuleHandle("lua_shared.dll");
+
+	luaL_checkudata = (luaL_checkudataFn)GetProcAddress(hModule, "luaL_checkudata");
 	
 
 	return 0;
