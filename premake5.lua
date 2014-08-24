@@ -37,10 +37,7 @@ solution "gm_stringtable"
 
 	configuration "Release"
 		optimize "On"
-
-	configuration "vs*"
-		linkoptions { "/NODEFAULTLIB:LIBCMTD" }
-
+		
 
 	project "gm_stringtable"
 		kind "SharedLib"
