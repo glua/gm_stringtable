@@ -50,8 +50,12 @@ int stringtable_Count(lua_State *state) {
 //
 // StringTable Meta-Methods
 //
+INetworkStringTable *GetStringTable(lua_State *state, int iStackPos) {
+	return *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+}
+
 int StringTable_tostring(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -67,7 +71,7 @@ int StringTable_tostring(lua_State *state) {
 }
 
 int StringTable_GetName(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -78,7 +82,7 @@ int StringTable_GetName(lua_State *state) {
 }
 
 int StringTable_GetString(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -91,7 +95,7 @@ int StringTable_GetString(lua_State *state) {
 }
 
 int StringTable_GetUserData(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -110,7 +114,7 @@ int StringTable_GetUserData(lua_State *state) {
 }
 
 int StringTable_GetUserDataInt(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -129,7 +133,7 @@ int StringTable_GetUserDataInt(lua_State *state) {
 }
 
 int StringTable_Count(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 
 	if (!table)
 		return 0;
@@ -140,7 +144,7 @@ int StringTable_Count(lua_State *state) {
 }
 
 int StringTable_Size(lua_State *state) {
-	INetworkStringTable *table = *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	INetworkStringTable *table = GetStringTable(state, 1);
 	
 	if (!table)
 		return 0;
