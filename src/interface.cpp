@@ -1,22 +1,31 @@
 #include "interface.h"
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-// TODO:
-#endif
+#include "proc.h"
+#include "conv.h"
 
-typedef void *(*CreateInterfaceFn)(const char *name, int *ret);
+#include <stdio.h>
 
-void *GetInterface_Internal(const char *module_name, const char *interface_name) {
-	HMODULE hModule;
-	CreateInterfaceFn CreateInterface;
+typedef void *(__cdecl *CreateInterfaceFn)(const char *name, int *ret);
 
-	if (!(hModule = GetModuleHandle(module_name)))
-		return nullptr;
+void *GetInterface_Internal(const char *module_name, const char *interface_name, libsym_return *code)
+{
+	CreateInterfaceFn CreateInterface = 0;
+	char temp[512];
+	void *retval;
 
-	if (!(CreateInterface = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(hModule, "CreateInterface"))))
-		return nullptr;
+	snprintf(temp, 512, "%s" PROC_EXT, module_name);
 
-	return CreateInterface(interface_name, 0);
+	if(code) *code = LIBSYM_SUCCESS;
+
+	libsym_return codes = libsym_intrnl_(&CreateInterface, temp, "CreateInterface");
+	if(codes != LIBSYM_SUCCESS)
+	{
+		if(code) *code = codes;
+		return retval;
+	}
+
+	retval = CreateInterface(interface_name, 0);
+
+	return retval;
+
 }

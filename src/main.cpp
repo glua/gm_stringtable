@@ -1,11 +1,16 @@
-#include <Windows.h>
 
 #include <string>
 #include <sstream>
+#include <stdio.h>
 
 #include "GarrysMod/Lua/Interface.h"
 #include "interface.h"
 #include "networkstringtabledefs.h"
+
+#include "vtable.h"
+
+#include "proc.h"
+#include "conv.h"
 
 using namespace GarrysMod;
 
@@ -18,14 +23,14 @@ luaL_checkudataFn luaL_checkudata;
 // stringtable library functions
 //
 int stringtable_Get(lua_State *state) {
-	INetworkStringTable *table = nullptr;
+	INetworkStringTable *table = 0;
 
 	switch (LUA->GetType(-1)) {
 		case Lua::Type::STRING:
 			table = networktablecontainer->FindTable(LUA->GetString(1));
 			break;
 		case Lua::Type::NUMBER:
-			table = networktablecontainer->GetTable(LUA->GetNumber(1) - 1); // -1 to make stringtables seem indexed from 1 for PUNY LUA USERS
+			table = networktablecontainer->GetTable(int(LUA->GetNumber(1)) - 1); // -1 to make stringtables seem indexed from 1 for PUNY LUA USERS
 			break;
 	}
 
@@ -87,10 +92,10 @@ int StringTable_GetString(lua_State *state) {
 	if (!table)
 		return 0;
 
-	int i = LUA->CheckNumber(2);
+	int i = int(LUA->CheckNumber(2));
 
 	LUA->PushString(table->GetString(i - 1));
-	
+
 	return 1;
 }
 
@@ -100,7 +105,7 @@ int StringTable_GetUserData(lua_State *state) {
 	if (!table)
 		return 0;
 
-	int i = LUA->CheckNumber(2);
+	int i = int(LUA->CheckNumber(2));
 	int size;
 
 	const void *data = table->GetStringUserData(i - 1, &size);
@@ -119,7 +124,7 @@ int StringTable_GetUserDataInt(lua_State *state) {
 	if (!table)
 		return 0;
 
-	int i = LUA->CheckNumber(2);
+	int i = int(LUA->CheckNumber(2));
 	int size;
 
 	const void *data = table->GetStringUserData(i - 1, &size);
@@ -145,7 +150,7 @@ int StringTable_Count(lua_State *state) {
 
 int StringTable_Size(lua_State *state) {
 	INetworkStringTable *table = GetStringTable(state, 1);
-	
+
 	if (!table)
 		return 0;
 
@@ -162,14 +167,17 @@ GMOD_MODULE_OPEN() {
 			bool CLIENT = LUA->GetBool();
 		LUA->Pop();
 
+		libsym_return code;
 		if (CLIENT) {
-			networktablecontainer = GetInterface<INetworkStringTableContainer *>("engine", INTERFACENAME_NETWORKSTRINGTABLECLIENT);
+			networktablecontainer = GetInterface<INetworkStringTableContainer *>("engine", INTERFACENAME_NETWORKSTRINGTABLECLIENT, &code);
 		} else {
-			networktablecontainer = GetInterface<INetworkStringTableContainer *>("engine", INTERFACENAME_NETWORKSTRINGTABLESERVER);
+			networktablecontainer = GetInterface<INetworkStringTableContainer *>("engine", INTERFACENAME_NETWORKSTRINGTABLESERVER, &code);
 		}
 
 		if (!networktablecontainer) {
-			LUA->ThrowError("(GM_STRINGTABLE) Could not find INetworkStringTableContainer\n");
+			char err[512];
+			snprintf(err, 512, "(GM_STRINGTABLE) Could not find INetworkStringTableContainer, retcode = %i\n", code);
+			LUA->ThrowError(err);
 			return 0;
 		}
 
@@ -212,10 +220,9 @@ GMOD_MODULE_OPEN() {
 
 	LUA->Pop();
 
-	HMODULE hModule = GetModuleHandle("lua_shared.dll");
 
-	luaL_checkudata = (luaL_checkudataFn)GetProcAddress(hModule, "luaL_checkudata");
-	
+	libsym(&luaL_checkudata, "lua_shared", "luaL_checkudata");
+
 
 	return 0;
 }
