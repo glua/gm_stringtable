@@ -2,4 +2,5 @@ bins/
 project/
 linux/
 windows/
-premake5*
+premake5.exe
+premake5
