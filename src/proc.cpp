@@ -5,12 +5,15 @@
 
 #include <Windows.h>
 
+#define lib_open(name) ((void *)GetModuleHandleA(name))
+#define lib_sym(lib, symname) ((void *)GetProcAddress((HMODULE)lib, symname))
+
 #elif defined(__linux__)
 
 #include <dlfcn.h>
 
-#define GetModuleHandleA(name) dlopen(name, RTLD_LAZY | RTLD_NOLOAD)
-#define GetProcAddress dlsym
+#define lib_open(name) dlopen(name, RTLD_LAZY | RTLD_NOLOAD)
+#define lib_sym dlsym
 
 #else
 #error "unsupported OS"
@@ -19,14 +22,14 @@
 libsym_return libsym_intrnl(void **symbol, const char *libname, const char *interfacename)
 {
 
-  void *lib = GetModuleHandleA(libname);
+  void *lib = lib_open(libname);
 
   if(symbol) *symbol = 0;
 
   if(!lib)
     return LIBSYM_NODLL;
 
-  void *retval = GetProcAddress(lib, interfacename);
+  void *retval = lib_sym(lib, interfacename);
 
   if(!retval)
     return LIBSYM_NOSYMBOL;

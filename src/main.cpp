@@ -12,6 +12,10 @@
 #include "proc.h"
 #include "conv.h"
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 using namespace GarrysMod;
 
 INetworkStringTableContainer *networktablecontainer;
