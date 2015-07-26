@@ -18,10 +18,10 @@
 
 using namespace GarrysMod;
 
-INetworkStringTableContainer *networktablecontainer;
+INetworkStringTableContainer *networktablecontainer = 0;
 
 typedef void *(__cdecl *luaL_checkudataFn)(lua_State *L, int narg, const char *tname);
-luaL_checkudataFn luaL_checkudata;
+luaL_checkudataFn luaL_checkudata = 0;
 
 //
 // stringtable library functions
@@ -60,7 +60,7 @@ int stringtable_Count(lua_State *state) {
 // StringTable Meta-Methods
 //
 INetworkStringTable *GetStringTable(lua_State *state, int iStackPos) {
-	return *(INetworkStringTable **)luaL_checkudata(state, 1, "StringTable");
+	return *(INetworkStringTable **)luaL_checkudata(state, iStackPos, "StringTable");
 }
 
 int StringTable_tostring(lua_State *state) {
@@ -165,6 +165,21 @@ int StringTable_Size(lua_State *state) {
 
 
 GMOD_MODULE_OPEN() {
+
+
+	libsym_return err = libsym(&luaL_checkudata, "lua_shared", "luaL_checkudata");
+
+
+	if(err != LIBSYM_SUCCESS || luaL_checkudata == 0)
+	{
+
+		char errs[512];
+		snprintf(errs, 512, "Unable to get function luaL_checkudata: %i\n", err);
+
+		LUA->ThrowError(errs);
+
+	}
+
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
 		LUA->GetField(-1, "CLIENT");
@@ -223,10 +238,6 @@ GMOD_MODULE_OPEN() {
 		LUA->Pop();
 
 	LUA->Pop();
-
-
-	libsym(&luaL_checkudata, "lua_shared", "luaL_checkudata");
-
 
 	return 0;
 }
