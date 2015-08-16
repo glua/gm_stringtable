@@ -4,6 +4,7 @@ solution "gm_stringtable"
 	targetdir "bin"
 
 	flags "StaticRuntime"
+	architecture "x86"
 
 	configurations {
 		"Debug",
