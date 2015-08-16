@@ -1,7 +1,0 @@
-Move luaL_checkudata to use an ILuaBase method if it is ever added
-
-StringTable::FindString -- Search for string equal to contents, rather than having to iterate within Lua
-
-Perhaps bring out some table modification functions, table creation functions and table callback creation
-
-It'll probably explode if ran in both the client state and menu state.. although maybe not.
