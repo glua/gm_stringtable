@@ -1,17 +1,28 @@
-dofile("../../common.lua")
+solution "gm_stringtable"
+	language "C++"
+	location "project"
+	targetdir "bin"
 
-RequireDefaultlibs()
+	flags "StaticRuntime"
 
-SOLUTION 	"gm_stringtable"
+	configurations {
+		"Debug",
+		"Release"
+	}
 
-targetdir	"bins"
-INCLUDES	"source_sdk"
-INCLUDES 	"gmod_sdk"
-defines		{"NDEBUG"}
+	configuration "Debug"
+		flags { "symbols" }
 
-WINDOWS()
-LINUX()
-PROJECT()
-SOURCE_SDK_LINKS()
-configuration 		"windows"
-configuration 		"linux"
+	configuration "Release"
+		optimize "On"
+
+	project "gm_stringtable"
+		kind "SharedLib"
+		
+		files {
+			"src/**.cpp",
+			"src/**.h"
+		}
+
+		include "LuaInterface"
+		include "SourceSDK/Tier0"
