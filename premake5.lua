@@ -4,9 +4,8 @@ solution "gm_stringtable"
 	targetdir "bin"
 
 	flags "StaticRuntime"
-	if os.get() == "windows" then
-		architecture "x86"
-	end
+	
+	architecture "x86"
 
 	configurations {
 		"Debug",
